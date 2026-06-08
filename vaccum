@@ -1,0 +1,61 @@
+# DFS-based Vacuum Cleaner Problem
+
+def is_goal(grid):
+    # Check if all cells are clean
+    for row in grid:
+        if 'D' in row:
+            return False
+    return True
+
+def dfs(position, grid, visited):
+    rows = len(grid)
+    cols = len(grid[0])
+
+    # Goal test
+    if is_goal(grid):
+        return True
+
+    # Create a hashable state
+    state = (position, tuple(tuple(row) for row in grid))
+
+    if state in visited:
+        return False
+
+    visited.add(state)
+
+    x, y = position
+
+    # Clean current cell if dirty
+    if grid[x][y] == 'D':
+        new_grid = [row[:] for row in grid]
+        new_grid[x][y] = 'C'
+        if dfs((x, y), new_grid, visited):
+            return True
+
+    # Move in 4 directions
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+
+        if 0 <= nx < rows and 0 <= ny < cols:
+            if dfs((nx, ny), [row[:] for row in grid], visited):
+                return True
+
+    return False
+
+
+# Example room
+grid = [
+    ['D', 'C'],
+    ['D', 'D']
+]
+
+start_position = (0, 0)
+
+visited = set()
+
+if dfs(start_position, grid, visited):
+    print("Room can be fully cleaned.")
+else:
+    print("Room cannot be fully cleaned.")
